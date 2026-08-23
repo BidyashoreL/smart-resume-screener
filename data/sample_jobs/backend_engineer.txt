@@ -1,0 +1,24 @@
+Job Title: Backend Engineer
+
+We are hiring a Backend Engineer to build and scale our core API platform.
+
+Required Skills:
+- Python
+- SQL
+- REST API design
+
+Preferred Skills:
+- Docker
+- Kubernetes
+- FastAPI
+
+Minimum Experience: 3 years
+
+Education: Bachelor's degree in Computer Science, Software Engineering, or a
+related field.
+
+Responsibilities:
+- Design and build scalable backend services and APIs
+- Own database schema design and query performance
+- Participate in on-call rotation for production services
+- Collaborate with frontend and product teams to ship features end-to-end

@@ -1,0 +1,26 @@
+Sara Khan
+Email: sara.khan@example.com
+Phone: +91-91234-56789
+
+SUMMARY
+Frontend engineer with 4 years of experience building web applications with
+React and TypeScript.
+
+SKILLS
+JavaScript, TypeScript, React, HTML, CSS, Node.js, Figma
+
+EXPERIENCE
+Frontend Engineer — PixelCraft Studio (Jan 2021 - Present, 44 months)
+- Built and maintained customer-facing dashboards using React and TypeScript
+- Collaborated with designers to implement pixel-perfect UI components
+- Improved page load performance by 30% through code-splitting
+
+Web Developer — Freelance (Jun 2019 - Dec 2020, 18 months)
+- Built marketing websites for small businesses using WordPress and vanilla JS
+
+EDUCATION
+B.A., Graphic Design — National Institute of Design, 2019
+
+PROJECTS
+Portfolio Site Builder
+- A drag-and-drop portfolio website builder built with React.

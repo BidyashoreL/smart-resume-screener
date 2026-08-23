@@ -1,0 +1,25 @@
+Job Title: Data Scientist
+
+We are looking for a Data Scientist to help drive data-informed product
+decisions.
+
+Required Skills:
+- Python
+- Machine Learning
+- SQL
+
+Preferred Skills:
+- scikit-learn
+- AWS
+- Data Visualization
+
+Minimum Experience: 2 years
+
+Education: Bachelor's or Master's degree in Statistics, Computer Science,
+Mathematics, or a related quantitative field.
+
+Responsibilities:
+- Analyze large datasets to identify actionable business insights
+- Build and evaluate predictive models for churn, pricing, and forecasting
+- Communicate findings clearly to non-technical stakeholders
+- Partner with engineering to productionize models where appropriate

@@ -1,0 +1,24 @@
+Job Title: Machine Learning Engineer
+
+We are looking for a Machine Learning Engineer to join our AI platform team.
+
+Required Skills:
+- Python
+- Machine Learning
+- PyTorch
+
+Preferred Skills:
+- Docker
+- AWS
+- FastAPI
+
+Minimum Experience: 2 years
+
+Education: Bachelor's degree in Computer Science, Artificial Intelligence, or
+a related field.
+
+Responsibilities:
+- Build and train machine learning models for production use cases
+- Deploy ML services and APIs used by other engineering teams
+- Collaborate with data scientists to productionize research prototypes
+- Monitor model performance in production and iterate based on feedback

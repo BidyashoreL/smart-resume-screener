@@ -1,0 +1,27 @@
+Arjun Mehta
+Email: arjun.mehta@example.com
+Phone: +91-99887-66554
+
+SUMMARY
+Software engineer with growing machine learning experience, primarily focused
+on data pipelines and model training in scikit-learn.
+
+SKILLS
+Python, Machine Learning, scikit-learn, Pandas, SQL, AWS, Linux
+
+EXPERIENCE
+Software Engineer — DataForge Labs (Mar 2022 - Present, 28 months)
+- Built ETL pipelines processing 2TB of data daily using Python and SQL
+- Trained and evaluated classification models with scikit-learn for fraud
+  detection
+- Deployed batch scoring jobs on AWS Lambda
+
+Junior Developer — Webnest Solutions (Jul 2020 - Feb 2022, 19 months)
+- Maintained internal Django web applications
+
+EDUCATION
+B.Sc, Computer Science — University of Pune, 2020
+
+PROJECTS
+Fraud Detection Pipeline
+- End-to-end fraud scoring pipeline using scikit-learn and SQL, deployed on AWS.

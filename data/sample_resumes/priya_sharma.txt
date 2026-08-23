@@ -1,0 +1,29 @@
+Priya Sharma
+Email: priya.sharma@example.com
+Phone: +91-98765-43210
+
+SUMMARY
+Machine Learning Engineer with 3 years of experience building and deploying
+production ML systems.
+
+SKILLS
+Python, Machine Learning, Deep Learning, PyTorch, TensorFlow, FastAPI, Docker,
+SQL, Git
+
+EXPERIENCE
+ML Engineer — NeuralWorks Technologies (Jan 2023 - Present, 30 months)
+- Built and deployed computer vision models for defect detection using PyTorch
+- Designed a FastAPI-based inference service serving 50k requests/day
+- Containerized model services with Docker for reproducible deployment
+
+Data Science Intern — BrightPath Analytics (Jun 2021 - Dec 2021, 6 months)
+- Built customer churn prediction models using scikit-learn
+- Automated data preprocessing pipelines in Python
+
+EDUCATION
+B.Tech, Computer Science — Indian Institute of Technology, 2021
+
+PROJECTS
+Resume Screener Prototype
+- Built a prototype resume-to-job matching tool using embeddings and a simple
+  scoring model as a personal project.
