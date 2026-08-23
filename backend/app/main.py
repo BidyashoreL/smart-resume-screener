@@ -6,6 +6,8 @@ handling, and the API routers. It intentionally contains no business logic -
 that all lives in `app/services/`.
 """
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -20,6 +22,16 @@ settings = get_settings()
 configure_logging()
 logger = get_logger(__name__)
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    logger.info(
+        "%s started (provider=%s, env=%s)", settings.app_name, settings.llm_provider, settings.environment
+    )
+    yield
+
+
 app = FastAPI(
     title=settings.app_name,
     description=(
@@ -28,6 +40,7 @@ app = FastAPI(
         "a ranked, explainable shortlist."
     ),
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # Streamlit (or any local frontend) runs on a different port during development.
@@ -64,12 +77,6 @@ async def handle_unexpected_error(request: Request, exc: Exception) -> JSONRespo
         status_code=500,
         content={"error": "InternalServerError", "detail": "An unexpected error occurred."},
     )
-
-
-@app.on_event("startup")
-def on_startup() -> None:
-    init_db()
-    logger.info("%s started (provider=%s, env=%s)", settings.app_name, settings.llm_provider, settings.environment)
 
 
 @app.get("/health", tags=["system"])
