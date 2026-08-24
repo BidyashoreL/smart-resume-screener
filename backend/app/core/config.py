@@ -8,8 +8,6 @@ the repository root for the full list of supported variables.
 
 from functools import lru_cache
 from typing import Literal
-
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -24,7 +22,7 @@ class Settings(BaseSettings):
     llm_provider: Literal["gemini", "openrouter"] = "gemini"
 
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.0-flash"
+    gemini_model: str = "gemini-3.6-flash"
 
     openrouter_api_key: str = ""
     openrouter_model: str = "openai/gpt-4o-mini"
@@ -34,6 +32,21 @@ class Settings(BaseSettings):
 
     # --- Database ---
     database_url: str = "sqlite:///./resume_screener.db"
+
+    # --- Authentication (Phase 7) ---
+    # SECURITY: jwt_secret_key MUST be overridden via the JWT_SECRET_KEY env
+    # var outside local development - see .env.example. Tokens signed with
+    # the fallback below must never be trusted in a shared/production env.
+    jwt_secret_key: str = "dev-insecure-secret-change-in-production"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 15
+    refresh_token_expire_days: int = 7
+    refresh_cookie_name: str = "resume_screener_refresh_token"
+
+    # --- CORS ---
+    # The frontend's origin, used both for CORS and for scoping the refresh
+    # cookie. Wildcard origins are incompatible with allow_credentials=True.
+    frontend_origin: str = "http://localhost:5173"
 
     # --- File upload constraints ---
     max_file_size_mb: int = 10

@@ -86,3 +86,61 @@ class ScreeningResponse(BaseModel):
     screening_id: str
     job_id: str
     results: list[CandidateScreeningResult]
+
+
+class ScreeningBatchSummary(BaseModel):
+    screening_id: str
+    job_id: str
+    job_title: str
+    candidates_count: int
+    shortlist_count: int
+    consider_count: int
+    reject_count: int
+    average_score: float
+    created_at: str
+
+
+class TopCandidateItem(BaseModel):
+    candidate_id: str
+    candidate_name: str
+    job_id: str
+    job_title: str
+    overall_score: float
+    match_band: str
+    recommendation: str
+    strengths: list[str] = Field(default_factory=list)
+    screening_id: str
+
+
+class JobPerformanceItem(BaseModel):
+    job_id: str
+    job_title: str
+    candidates_screened: int
+    shortlist_count: int
+    consider_count: int
+    reject_count: int
+    average_score: float
+
+
+class SkillInsightItem(BaseModel):
+    skill: str
+    count: int
+
+
+class AnalyticsOverview(BaseModel):
+    total_candidates: int
+    active_jobs: int
+    total_screenings: int
+    candidates_screened: int
+    shortlisted_count: int
+    consider_count: int
+    rejected_count: int
+    average_score: float
+    match_band_distribution: dict[str, int]
+    recommendation_distribution: dict[str, int]
+    recent_screenings: list[ScreeningBatchSummary]
+    top_candidates: list[TopCandidateItem]
+    job_performance: list[JobPerformanceItem]
+    frequently_matched_required_skills: list[SkillInsightItem]
+    frequently_missing_required_skills: list[SkillInsightItem]
+    frequently_matched_preferred_skills: list[SkillInsightItem]

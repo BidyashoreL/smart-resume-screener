@@ -7,7 +7,7 @@ so the extraction functions are trivially unit-testable in isolation.
 
 import re
 
-import fitz  # PyMuPDF
+import pymupdf
 
 from app.core.exceptions import TextExtractionError
 
@@ -21,10 +21,12 @@ def extract_text_from_pdf_bytes(file_bytes: bytes) -> str:
     whether that means "OCR required" vs. "genuinely empty document".
     """
     try:
-        with fitz.open(stream=file_bytes, filetype="pdf") as doc:
+        with pymupdf.open(stream=file_bytes, filetype="pdf") as doc:
             pages = [page.get_text("text") for page in doc]
     except Exception as exc:
-        raise TextExtractionError(f"Could not open or read the PDF file: {exc}") from exc
+        raise TextExtractionError(
+            f"Could not open or read the PDF file: {exc}"
+        ) from exc
 
     return "\n".join(pages)
 
@@ -38,7 +40,10 @@ def clean_text(raw_text: str) -> str:
       - drop non-printable control characters (keep tabs/newlines)
     """
     text = raw_text.replace("\r\n", "\n").replace("\r", "\n")
-    text = "".join(ch for ch in text if ch == "\n" or ch == "\t" or ch.isprintable())
+    text = "".join(
+        ch for ch in text
+        if ch == "\n" or ch == "\t" or ch.isprintable()
+    )
     lines = [line.rstrip() for line in text.split("\n")]
     text = "\n".join(lines)
     text = re.sub(r"\n{3,}", "\n\n", text)

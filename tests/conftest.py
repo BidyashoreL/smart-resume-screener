@@ -103,7 +103,7 @@ def test_client(fake_llm) -> Iterator["TestClient"]:  # noqa: F821
 
     from app.db.database import Base, get_db
     # Import models so they register on Base.metadata before create_all runs.
-    from app.models import candidate, job, screening  # noqa: F401
+    from app.models import candidate, company, job, refresh_token, screening, user  # noqa: F401
 
     engine = create_engine(
         "sqlite:///:memory:",
@@ -137,3 +137,106 @@ def test_client(fake_llm) -> Iterator["TestClient"]:  # noqa: F821
 
     app.dependency_overrides.clear()
     engine.dispose()
+
+
+# --- Auth test helpers (Phase 7) --------------------------------------------
+#
+# Factory fixtures (not plain functions) so any test file can use them
+# without an import, matching this file's existing fixture-based convention.
+
+
+@pytest.fixture()
+def register_user():
+    """Registers a brand-new company + ADMIN user and returns the TokenResponse body."""
+
+    def _register(
+        client,
+        *,
+        email="admin@acme.dev",
+        password="SuperSecret123!",
+        first_name="Ada",
+        last_name="Admin",
+        company_name="Acme Inc",
+    ) -> dict:
+        resp = client.post(
+            "/api/auth/register",
+            json={
+                "email": email,
+                "password": password,
+                "first_name": first_name,
+                "last_name": last_name,
+                "company_name": company_name,
+            },
+        )
+        assert resp.status_code == 201, resp.text
+        return resp.json()
+
+    return _register
+
+
+@pytest.fixture()
+def login_user():
+    """Logs an existing user in and returns the TokenResponse body."""
+
+    def _login(client, *, email, password) -> dict:
+        resp = client.post("/api/auth/login", json={"email": email, "password": password})
+        assert resp.status_code == 200, resp.text
+        return resp.json()
+
+    return _login
+
+
+@pytest.fixture()
+def auth_headers():
+    """Builds an `Authorization: Bearer ...` header dict from a TokenResponse body."""
+
+    def _headers(token_response: dict) -> dict:
+        return {"Authorization": f"Bearer {token_response['access_token']}"}
+
+    return _headers
+
+
+@pytest.fixture()
+def upload_resume():
+    """Uploads a canned resume with the given auth headers, returns the candidate_id."""
+
+    def _upload(client, headers, filename="resume.txt") -> str:
+        import io
+
+        content = (
+            b"Jane Smith\nEmail: jane@example.com\nSkills: Python, ML, FastAPI\n"
+            b"Experience: ML Engineer at Acme, 30 months, built and deployed ML models\n"
+            b"Education: B.Tech Computer Science, XYZ University, 2021\n"
+        )
+        resp = client.post(
+            "/api/resumes/upload",
+            files={"file": (filename, io.BytesIO(content), "text/plain")},
+            headers=headers,
+        )
+        assert resp.status_code == 201, resp.text
+        return resp.json()["candidate_id"]
+
+    return _upload
+
+
+@pytest.fixture()
+def create_job():
+    """Creates a canned job with the given auth headers, returns the job_id."""
+
+    def _create(client, headers) -> str:
+        resp = client.post(
+            "/api/jobs",
+            json={
+                "description": (
+                    "We are hiring a Machine Learning Engineer. Required: Python, "
+                    "Machine Learning, PyTorch. Preferred: Docker, AWS, FastAPI. "
+                    "Minimum 2 years experience. Requires a degree in Computer Science. "
+                    "Responsibilities: build machine learning models and deploy ML services."
+                )
+            },
+            headers=headers,
+        )
+        assert resp.status_code == 201, resp.text
+        return resp.json()["job_id"]
+
+    return _create
