@@ -24,7 +24,6 @@ class ScreeningResult(Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=_new_screening_id)
     batch_id: Mapped[str] = mapped_column(String, index=True)
-    company_id: Mapped[str] = mapped_column(ForeignKey("companies.id"), index=True, nullable=False)
 
     candidate_id: Mapped[str] = mapped_column(ForeignKey("candidates.id"), index=True)
     job_id: Mapped[str] = mapped_column(ForeignKey("jobs.id"), index=True)

@@ -12,13 +12,9 @@ Routes and services raise these instead of generic `Exception`s or raw
 Status code mapping (per the project's API error handling spec):
 
     400  InvalidFileTypeError
-    401  InvalidCredentialsError, InvalidTokenError, InactiveUserError
-    403  PermissionDeniedError
-    404  CandidateNotFoundError, JobNotFoundError, ScreeningNotFoundError,
-         UserNotFoundError, CompanyNotFoundError
-    409  DuplicateEmailError, LastAdminError
     413  FileTooLargeError
     422  TextExtractionError, SchemaValidationError
+    404  CandidateNotFoundError, JobNotFoundError, ScreeningNotFoundError
     502  LLMProviderError
     500  anything else (unexpected server error)
 """
@@ -80,46 +76,3 @@ class ScreeningNotFoundError(ResumeScreenerError):
 class LLMProviderError(ResumeScreenerError):
     status_code = 502
     default_message = "The LLM provider failed to return a usable response."
-
-
-# --- Auth / authorization (Phase 7) ---------------------------------------
-
-
-class InvalidCredentialsError(ResumeScreenerError):
-    status_code = 401
-    default_message = "Incorrect email or password."
-
-
-class InvalidTokenError(ResumeScreenerError):
-    status_code = 401
-    default_message = "The supplied token is missing, invalid, or expired."
-
-
-class InactiveUserError(ResumeScreenerError):
-    status_code = 401
-    default_message = "This account has been deactivated."
-
-
-class PermissionDeniedError(ResumeScreenerError):
-    status_code = 403
-    default_message = "You do not have permission to perform this action."
-
-
-class DuplicateEmailError(ResumeScreenerError):
-    status_code = 409
-    default_message = "An account with this email already exists."
-
-
-class UserNotFoundError(ResumeScreenerError):
-    status_code = 404
-    default_message = "User not found."
-
-
-class CompanyNotFoundError(ResumeScreenerError):
-    status_code = 404
-    default_message = "Company not found."
-
-
-class LastAdminError(ResumeScreenerError):
-    status_code = 409
-    default_message = "Cannot remove or demote the last active admin of a company."

@@ -9,11 +9,9 @@ import uuid
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.deps import get_current_user
 from app.core.logging import get_logger
 from app.db import repositories
 from app.db.database import get_db
-from app.models.user import User
 from app.schemas.candidate import CandidateProfile
 from app.schemas.job import JobProfile
 from collections import Counter
@@ -37,12 +35,10 @@ logger = get_logger(__name__)
 
 
 @router.get("/analytics/overview", response_model=AnalyticsOverview)
-def get_analytics_overview(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
-) -> AnalyticsOverview:
-    candidates = repositories.list_candidates(db, current_user.company_id)
-    jobs = repositories.list_jobs(db, current_user.company_id)
-    all_results = repositories.list_all_screening_results(db, current_user.company_id)
+def get_analytics_overview(db: Session = Depends(get_db)) -> AnalyticsOverview:
+    candidates = repositories.list_candidates(db)
+    jobs = repositories.list_jobs(db)
+    all_results = repositories.list_all_screening_results(db)
 
     jobs_map = {j.id: (j.title or (j.structured_json.get("title") if isinstance(j.structured_json, dict) else None) or "Untitled Job") for j in jobs}
     candidates_map = {c.id: (c.name or (c.structured_json.get("name") if isinstance(c.structured_json, dict) else None) or "Candidate") for c in candidates}
@@ -181,29 +177,26 @@ def get_analytics_overview(
 
 
 @router.get("/batches", response_model=list[ScreeningBatchSummary])
-def list_screening_batches(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
-) -> list[ScreeningBatchSummary]:
-    overview = get_analytics_overview(current_user, db)
+def list_screening_batches(db: Session = Depends(get_db)) -> list[ScreeningBatchSummary]:
+    overview = get_analytics_overview(db)
     return overview.recent_screenings
 
 
 @router.post("", response_model=ScreeningResponse)
 def screen_candidates(
     payload: ScreeningRequest,
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     matching_service: MatchingService = Depends(get_matching_service),
 ) -> ScreeningResponse:
 
-    job_row = repositories.get_job(db, payload.job_id, current_user.company_id)
+    job_row = repositories.get_job(db, payload.job_id)
     job_profile = JobProfile.model_validate(job_row.structured_json)
 
     batch_id = f"screening_{uuid.uuid4().hex[:10]}"
     results: list[CandidateScreeningResult] = []
 
     for candidate_id in payload.candidate_ids:
-        candidate_row = repositories.get_candidate(db, candidate_id, current_user.company_id)
+        candidate_row = repositories.get_candidate(db, candidate_id)
         candidate_profile = CandidateProfile.model_validate(candidate_row.structured_json)
 
         match_result = matching_service.match(candidate_profile, job_profile)
@@ -212,7 +205,6 @@ def screen_candidates(
             db,
             id=f"screening_{uuid.uuid4().hex[:10]}",
             batch_id=batch_id,
-            company_id=current_user.company_id,
             candidate_id=candidate_id,
             job_id=payload.job_id,
             overall_score=match_result.scores.overall_score,
@@ -261,12 +253,8 @@ def screen_candidates(
 
 
 @router.get("/{screening_id}", response_model=ScreeningResponse)
-def get_screening(
-    screening_id: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-) -> ScreeningResponse:
-    rows = repositories.get_screening_batch(db, screening_id, current_user.company_id)
+def get_screening(screening_id: str, db: Session = Depends(get_db)) -> ScreeningResponse:
+    rows = repositories.get_screening_batch(db, screening_id)
     job_id = rows[0].job_id
 
     results = [

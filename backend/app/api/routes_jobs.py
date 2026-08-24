@@ -5,11 +5,9 @@ from datetime import timezone
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.deps import get_current_user
 from app.core.logging import get_logger
 from app.db import repositories
 from app.db.database import get_db
-from app.models.user import User
 from app.schemas.job import JobCreateRequest, JobCreateResponse, JobProfile, JobResponse
 from app.services import job_parser
 from app.services.extraction_service import ExtractionService, get_extraction_service
@@ -21,7 +19,6 @@ logger = get_logger(__name__)
 @router.post("", response_model=JobCreateResponse, status_code=201)
 def create_job(
     payload: JobCreateRequest,
-    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
     extraction_service: ExtractionService = Depends(get_extraction_service),
 ) -> JobCreateResponse:
@@ -33,23 +30,18 @@ def create_job(
 
     job = repositories.create_job(
         db,
-        company_id=current_user.company_id,
         title=profile.title,
         raw_description=cleaned_description,
         structured_json=profile.model_dump(),
     )
 
-    logger.info("Created job -> job_id=%s title=%r company=%s", job.id, job.title, current_user.company_id)
+    logger.info("Created job -> job_id=%s title=%r", job.id, job.title)
     return JobCreateResponse(job_id=job.id, status="created")
 
 
 @router.get("/{job_id}", response_model=JobResponse)
-def get_job(
-    job_id: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
-) -> JobResponse:
-    job = repositories.get_job(db, job_id, current_user.company_id)
+def get_job(job_id: str, db: Session = Depends(get_db)) -> JobResponse:
+    job = repositories.get_job(db, job_id)
     return JobResponse(
         job_id=job.id,
         title=job.title,
@@ -59,10 +51,8 @@ def get_job(
 
 
 @router.get("", response_model=list[JobResponse])
-def list_jobs(
-    current_user: User = Depends(get_current_user), db: Session = Depends(get_db)
-) -> list[JobResponse]:
-    jobs = repositories.list_jobs(db, current_user.company_id)
+def list_jobs(db: Session = Depends(get_db)) -> list[JobResponse]:
+    jobs = repositories.list_jobs(db)
     return [
         JobResponse(
             job_id=j.id,

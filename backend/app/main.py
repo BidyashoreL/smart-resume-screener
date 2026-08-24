@@ -12,7 +12,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api import routes_auth, routes_company, routes_jobs, routes_resumes, routes_screening, routes_users
+from app.api import routes_resumes, routes_jobs, routes_screening
 from app.core.config import get_settings
 from app.core.exceptions import ResumeScreenerError
 from app.core.logging import configure_logging, get_logger
@@ -43,12 +43,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# The frontend runs on a different port during development. A wildcard origin
-# is incompatible with allow_credentials=True (required for the refresh-token
-# cookie) - browsers reject that combination - so this must be an explicit origin.
+# Streamlit (or any local frontend) runs on a different port during development.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_origin],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -86,9 +84,6 @@ def health_check() -> dict:
     return {"status": "ok", "service": settings.app_name}
 
 
-app.include_router(routes_auth.router, prefix="/api/auth", tags=["auth"])
-app.include_router(routes_users.router, prefix="/api/users", tags=["users"])
-app.include_router(routes_company.router, prefix="/api/company", tags=["company"])
 app.include_router(routes_resumes.router, prefix="/api/resumes", tags=["resumes"])
 app.include_router(routes_jobs.router, prefix="/api/jobs", tags=["jobs"])
 app.include_router(routes_screening.router, prefix="/api/screen", tags=["screening"])

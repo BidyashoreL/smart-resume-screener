@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, DateTime, ForeignKey, String, Text
+from sqlalchemy import JSON, DateTime, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.database import Base
@@ -14,12 +14,9 @@ def _new_job_id() -> str:
 
 
 class Job(Base):
-    """Scoped to a company (tenant) - see `app/models/company.py`."""
-
     __tablename__ = "jobs"
 
     id: Mapped[str] = mapped_column(String, primary_key=True, default=_new_job_id)
-    company_id: Mapped[str] = mapped_column(ForeignKey("companies.id"), index=True, nullable=False)
     title: Mapped[str | None] = mapped_column(String, nullable=True)
 
     raw_description: Mapped[str] = mapped_column(Text, nullable=False)

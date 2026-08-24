@@ -27,17 +27,12 @@ class Base(DeclarativeBase):
 
 
 def init_db() -> None:
-    """Create all tables that don't already exist, then run the additive-only
-    company_id backfill migration. Called on app startup."""
+    """Create all tables that don't already exist. Called on app startup."""
     # Import models here (not at module top-level) so they register on Base.metadata
     # before create_all runs, without creating a circular import at module load time.
-    from app.models import candidate, company, job, refresh_token, screening, user  # noqa: F401
+    from app.models import candidate, job, screening  # noqa: F401
 
     Base.metadata.create_all(bind=engine)
-
-    from app.db.migrations import run_migrations
-
-    run_migrations(engine)
 
 
 def get_db() -> Generator[Session, None, None]:
